@@ -222,7 +222,7 @@ void assembler::pass2()
 		int count=0;
 		bool extended = false; // extended instruction format 
 
-		listing << lineno << "	" << temp_line << "	";
+		listing << std::dec << lineno << "	" << temp_line << "	";
 		lineno += 5;
 		
 		while ((pos = line.find(delimiter)) != std::string::npos) 
@@ -388,19 +388,32 @@ void assembler::pass2()
 				//if (x==1) hexcode |= 8388608;
 
 			} 
-			/*
-			else if (!tokens[2].compare("RESW"))
+			
+			else if (!tokens[2].compare("WORD"))
 			{
 				int val = std::stoi(tokens[3],nullptr,16);
-				while(val--)
-				out << "000000" << endl;
+				out << std::setw(6) << std::setfill('0') << std::hex << val << endl;
+				listing << std::setw(6) << std::setfill('0') << std::hex << val << endl;
 				locctr += 3;
 			}
-			else if (!tokens[2].compare("RESB"))
+			else if (!tokens[2].compare("BYTE"))
 			{
-				out << ""
+				// do shit here
 			}
-			*/
+			else if (!tokens[3].compare("RESW"))
+			{
+				int val = std::stoi(tokens[3],nullptr,16);
+				listing << endl;
+				//listing << std::setw(6) << std::setfill('0') << std::hex << val << endl;
+				locctr += 3*val;
+			}
+			else if (!tokens[3].compare("RESB"))
+			{
+				int val = std::stoi(tokens[3],nullptr,16);
+				listing << endl;
+				//listing << std::setw(6) << std::setfill('0') << std::hex << val << endl;
+				locctr += val;
+			}	
 
 		}
 		
