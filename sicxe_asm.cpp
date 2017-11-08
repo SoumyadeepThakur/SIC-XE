@@ -272,7 +272,7 @@ bool assembler::pass2()
 		else
 		{
 			
-			int opcode, op_addr, addr, hexcode, i=1, x=0, n=1;
+			int opcode, op_addr, addr, hexcode, n=1, i=1, x=0, bp=1; // CAN MAKE xbpe as 1 var
 			std::string objcode="";
 			if (tokens[2].at(0) == '+') // extended addressing format used here
 			{
@@ -396,6 +396,7 @@ bool assembler::pass2()
 						//cout << "ABCD: " << (op_addr - locctr) << endl;
 						hexcode = hexcode << 16;
 						//cout << "HEXCODE AFTER SHIFT: " << std::hex << hexcode << endl;
+						if (n) hexcode |= (bp*8192); // if not immediate addressing
 						hexcode |= addr; // PC relative
 						//cout << "HEXCODE AFTER ORING" << std::hex << hexcode << endl;
 						if (x==1)

@@ -6,11 +6,15 @@ We will be up and runninig soon
 
 ### As of now, compile as:
 
-g++ -o {prog-name} tables.cpp sicxe_asm.cpp sicxe.cpp -std=c++14
+make
+
+You may remove the object files from your directory by
+
+make clean
 
 ### Exceute as:
 
-./{prog-name} {inputfile} {outputfile}
+./sicxe {inputfile} {outputfile}
 
 inter.txt contains the intermediate file generated after pass 1
 listing.txt contains the listing file generated after pass 2
