@@ -1,14 +1,14 @@
 # SIC-XE
 
-###SIC-XE Assembler in C++
+### SIC-XE Assembler in C++
 
 We will be up and runninig soon
 
-###As of now, compile as:
+### As of now, compile as:
 
 g++ -o {prog-name} tables.cpp sicxe_asm.cpp sicxe.cpp -std=c++14
 
-###Exceute as:
+### Exceute as:
 
 ./{prog-name} {inputfile} {outputfile}
 
