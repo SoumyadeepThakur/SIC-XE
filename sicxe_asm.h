@@ -1,7 +1,8 @@
 /*
 AUTHOR: SOUMYADEEP THAKUR
-DATE OF CREATION: 17 AUG 2017
-
+B.E 3RD YEAR
+JADAVPUR UNIVERSITY
+DATE: 3 NOV 2017
 */
 
 /* guard */
@@ -24,7 +25,6 @@ DATE OF CREATION: 17 AUG 2017
 
 #endif
 
-#endif
 
 /*util function to check for branches */
 //std::map <std::string, int> op_tab;
@@ -38,8 +38,8 @@ class assembler
 	std::map <std::string, std::pair<int, bool> > sym_tab;
 	//std::map <std::string, int> label_table;
 	//std::set <std::string> labels, symbols;
-	void pass1();
-	void pass2();
+	bool pass1();
+	bool pass2();
 	int data_directive(std::string, std::string);
 	int get_data_location(std::string,std::string,std::string);
 	unsigned char *byte_format(std::string);
@@ -53,3 +53,4 @@ class assembler
 
 };
 
+#endif

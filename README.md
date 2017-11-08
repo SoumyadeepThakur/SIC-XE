@@ -1,10 +1,19 @@
 # SIC-XE
 
-SIC-XE Assembler in C++
+###SIC-XE Assembler in C++
 
 We will be up and runninig soon
 
-Details regarding executing the code will be updated soon after organizing the codes.
+###As of now, compile as:
+
+g++ -o {prog-name} tables.cpp sicxe_asm.cpp sicxe.cpp -std=c++14
+
+###Exceute as:
+
+./{prog-name} {inputfile} {outputfile}
+
+inter.txt contains the intermediate file generated after pass 1
+listing.txt contains the listing file generated after pass 2
 
 
 AUTHOR: SOUMYADEEP THAKUR
