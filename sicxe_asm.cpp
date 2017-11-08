@@ -1,3 +1,11 @@
+/*
+AUTHOR: SOUMYADEEP THAKUR
+B.E 3RD YEAR
+JADAVPUR UNIVERSITY
+DATE: 3 NOV 2017
+*/
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -87,7 +95,7 @@ int assembler::data_directive(std::string opcode, std::string operand)
 	}
 	return 0;
 }
-void assembler::pass1()
+bool assembler::pass1()
 {
 	std::fstream in(ip_file,ios::in);
 	std::fstream inter(inter_file, ios::out);
@@ -101,6 +109,7 @@ void assembler::pass1()
     std::string name;
 	std::string delimiter = "	";
 	
+	bool error_flag = false; // CHECK IF ERROR IN ASSEMBLY
 	//tokenize file
 	while (!in.eof())
 	{
@@ -146,6 +155,8 @@ void assembler::pass1()
 					// ERROR: Repetition of labels
 					cout << "ERROR: Label repeated" << endl;
 					sym_tab[tokens[0]].second = false; 
+					error_flag = true;
+					break;
 				}
 				else
 				{
@@ -171,6 +182,8 @@ void assembler::pass1()
 			else
 			{	
 				cout << "Invalid operation code" << endl; 
+				error_flag = true;
+				break;
 			}
 		}
 		inter << temp_line << endl;
@@ -192,20 +205,25 @@ void assembler::pass1()
 		cout << t.first << " => " << t.second.first << " " << t.second.second << endl;
 	}
 	
+	if (!error_flag)
+		cout << "Assembler Pass 1 finished successfully" << endl;
+	else
+		cout << "Error in assembly" << endl;
 
-	cout << "Assembler Pass 1 finished successfully" << endl;
+	return error_flag;
 
 }
 
-void assembler::pass2()
+bool assembler::pass2()
 {
 	std::fstream inter("inter.txt", ios::in);
-	std::fstream out("op_file", ios::out);
+	std::fstream out(op_file, ios::out);
 	std::fstream listing("listing.txt", ios::out);
 	std::string line, name;
 	std::string delimiter = "	";
 	int start, locctr=0, lineno=5;
 	bool error_flag = false; // CHECK IF ERROR IN ASSEMBLY
+	bool new_text_rec = true;
 
 	/*
 	ASSUMING ONLY PROGRAM COUNTER RELATIVE ADDRESSING, NOT BASE RELATIVE
@@ -245,8 +263,10 @@ void assembler::pass2()
 			locctr = start;
 			name = tokens[1];
 			name.resize(8,' ');
-			cout << locctr << "-" << name << endl;
+			//cout << locctr << "-" << name << endl;
 			out << "H" << name << std::setw(6) << std::setfill('0') << std::hex << start << std::setw(6) << std::setfill('0') << std::hex << code_length << endl;	
+			out << "T" << std::setw(6) << std::setfill('0') << std::hex << locctr << endl;
+			new_text_rec = false;
 			listing << "000000" << endl;
 		}
 		else
@@ -350,7 +370,7 @@ void assembler::pass2()
 					else if (instrbytes == 3 )
 					{
 						// memory operations
-						// 3 bytes, i.e not extended memory
+						// 3 bytes, i.e not extended MEMORY_SIZE
 						if (n==0)
 						{
 							//IMMEDIATE ADDRESSING
@@ -359,7 +379,7 @@ void assembler::pass2()
 						else
 						{	
 							int rel_addr = op_addr - locctr - 3;
-							cout << "Khargosh: " << rel_addr;
+							//cout << "Khargosh: " << rel_addr;
 							if (rel_addr < 0)
 								rel_addr += 4096;
 
@@ -385,12 +405,11 @@ void assembler::pass2()
 					}
 				}
 
-				//if (x==1) hexcode |= 8388608;
-
 			} 
 			
 			else if (!tokens[2].compare("WORD"))
 			{
+				cout << "WORD" << endl;
 				int val = std::stoi(tokens[3],nullptr,16);
 				out << std::setw(6) << std::setfill('0') << std::hex << val << endl;
 				listing << std::setw(6) << std::setfill('0') << std::hex << val << endl;
@@ -398,16 +417,31 @@ void assembler::pass2()
 			}
 			else if (!tokens[2].compare("BYTE"))
 			{
-				// do shit here
+				// do here
+				cout << "BYTE" << endl;
+				char type = tokens[3].at(0);
+				if (type == 'C')
+				{
+					tokens[3] = tokens[3].substr(2,tokens[3].length()-3);
+					cout << "BYTE VALUE: " << tokens[3] << endl;
+					for (auto& j : tokens[3])
+					{
+						out << std::setw(2) << std::setfill('0') << std::hex << (unsigned int)j;
+						listing << std::setw(2) << std::setfill('0') << std::hex << (unsigned int)j;
+					}
+					out <<  endl;
+					listing << endl;
+				}
+
 			}
-			else if (!tokens[3].compare("RESW"))
+			else if (!tokens[2].compare("RESW"))
 			{
 				int val = std::stoi(tokens[3],nullptr,16);
 				listing << endl;
 				//listing << std::setw(6) << std::setfill('0') << std::hex << val << endl;
 				locctr += 3*val;
 			}
-			else if (!tokens[3].compare("RESB"))
+			else if (!tokens[2].compare("RESB"))
 			{
 				int val = std::stoi(tokens[3],nullptr,16);
 				listing << endl;
@@ -421,6 +455,8 @@ void assembler::pass2()
 	listing.close();
 	out.close();
 	inter.close();
+
+	return error_flag;
 }
 
 int assembler::get_data_location(string name, string st_type="", string val="")
@@ -474,7 +510,9 @@ void assembler::clear_memory()
 }
 void assembler::assemble()
 {
-	pass1();
-	pass2();
+	bool error_flag;
+	error_flag = pass1();
+	if (!error_flag)
+		error_flag = pass2();
 	//dump_code();
 }
